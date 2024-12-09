@@ -19,6 +19,7 @@ class Gsb_lib {
         // Assign the CodeIgniter super-object
         $this->CI =& get_instance();
         $this->CI->load->library('session');
+        $this->CI->load->library('user_agent');
         setlocale(LC_TIME,"fr_FR.utf8","fra_fra");
     }
 
@@ -134,33 +135,13 @@ class Gsb_lib {
     function format_montant($montant){
         return number_format($montant, 2, ',', ' ');
     }
-/**
- * Retourne le menu pour le sommaire de l'application
- * @param $idRole : le rôle de l'utilisateur
- * @return Tableau associatif de menu
- */
-    function get_menu($idRole){
-        $menu = array();
-        switch ($idRole) {
-            case "c":
-                $menu['Accueil'] = 'Accueil';
-                $menu['Validation fiches de frais'] = 'Validerfrais';
-                $menu['Remboursement fiches de frais'] = 'Rembourserfrais';
-                break;
-            case "v":
-                $menu['Accueil'] = 'Accueil';
-                $menu['Saisie fiche de frais'] = 'Gererfrais';
-                $menu['Mes fiches de frais'] = 'Etatfrais';
-                break;
-            case "rst":
-                break;
-            default:
-                break;
-        }
-        return $menu;
-    }
 
 
+    /**
+     * Vérifie si le mot de passe est sécurisé
+     * @param $mdp
+     * @return true si le mot de passe n'est pas sécurisé, false sinon
+     */
     function Restric_mdp($mdp) {
 
         if (strlen($mdp) < 8) {
@@ -198,4 +179,44 @@ class Gsb_lib {
         }
         return false;
     }
+
+    function Verif_jour($date) {
+        $date_actuelle = new DateTime();
+        $date_modif = new DateTime($date);
+        $interval = $date_modif->diff($date_actuelle);
+    
+        if ($interval->days < 1) {
+            return true;
+        }
+        return false;
+    }
+    /**
+ * Retourne le menu pour le sommaire de l'application
+ * @param $idRole : le rôle de l'utilisateur
+ * @return Tableau associatif de menu
+ */
+function get_menu($idRole){
+    $menu = array();
+    $result = $this->Verif_date($_SESSION['modification_mdp']);
+    if($result){
+        $idRole = "rst";
+    }
+    switch ($idRole) {
+        case "c":
+            $menu['Accueil'] = 'Accueil';
+            $menu['Validation fiches de frais'] = 'Validerfrais';
+            $menu['Remboursement fiches de frais'] = 'Rembourserfrais';
+            break;
+        case "v":
+            $menu['Accueil'] = 'Accueil';
+            $menu['Saisie fiche de frais'] = 'Gererfrais';
+            $menu['Mes fiches de frais'] = 'Etatfrais';
+            break;
+        case "rst":
+            break;
+        default:
+            break;
+    }
+    return $menu;
+}
 }

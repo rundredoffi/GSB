@@ -8,7 +8,7 @@
                             'name'      => 'ancienMdp',
                             'id'        => 'ancienMdp',
                             'maxlength'	=> '45',
-                            'size'      => '15'
+                            'size'      => '15',
                         ];
                 echo form_input($data);   
             echo '</p>';
@@ -18,7 +18,7 @@
                             'name'      => 'pwdMdp',
                             'id'        => 'pwdMdp',
                             'maxlength'	=> '45',
-                            'size'      => '15'
+                            'size'      => '15',
                         ];
                 echo form_input($data);   
             echo '</p>';
@@ -36,26 +36,29 @@
                             'name'      => 'confPwdMdp',
                             'id'        => 'confPwdMdp',
                             'maxlength'	=> '45',
-                            'size'      => '15'
+                            'size'      => '15',
                         ];
                 echo form_input($data);   
             echo '</p>';
         echo '</div>';
         echo '<div class="piedForm">';
+            if (!$enable) :
             echo '<p>';
+            
                 $data = [	'type' 	=> 'submit', 
                             'class'	=> 'bouton',
                             'value' => 'Valider',
                             'size'  => '20' 
-                        ];
+                        ]; 
                 echo form_input($data);
                 $data = [	'type' 	=> 'reset',
                             'class'	=> 'bouton',
                             'value' => 'Effacer',
-                            'size'  => '20'
+                            'size'  => '20',
                         ];
                 echo form_input($data);
             echo '</p>';
+            endif;
         echo '</div>';
         echo form_close();      
     echo '</div>'; 

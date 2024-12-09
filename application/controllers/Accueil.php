@@ -19,7 +19,13 @@ class Accueil extends CI_Controller {
             redirect(site_url('Connexion'));
         }
         else{
+            if ($this->gsb_lib->Verif_date($this->session->modification_mdp)) {
+                $this->gsb_lib->ajouter_erreur("Vous devez changer votre mot de passe");
+                redirect(site_url('ChangementMdp'));
+            }
+
             $this->load->library('session');
+
         }
     }
 
@@ -30,6 +36,8 @@ class Accueil extends CI_Controller {
  */
     public function index(){
         //infos générale page
+
+
         $this->load->view('structures/v_page_entete');
         $data ['menus'] = $this->gsb_lib->get_menu($this->session->idRole);
         $this->load->view('v_sommaire', $data);

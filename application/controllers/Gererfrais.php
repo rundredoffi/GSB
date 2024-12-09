@@ -28,6 +28,12 @@ class Gererfrais extends CI_Controller {
            redirect(site_url('Connexion'));
         }
         else{
+
+            if ($this->gsb_lib->Verif_date($this->session->modification_mdp)) {
+                $this->gsb_lib->ajouter_erreur("Vous devez changer votre mot de passe");
+                redirect(site_url('ChangementMdp'));
+            }
+
             $this->load->model('gsb_model');
             $this->load->helper('form_helper');
             $this->load->helper('html_helper');

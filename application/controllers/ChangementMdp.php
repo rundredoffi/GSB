@@ -52,7 +52,7 @@ class ChangementMdp extends CI_Controller {
     public function valider_mdp(){
         $login = $this->session->login;
         $mdp = $this->input->post('ancienMdp');
-       
+        $ancienMdp = $this->gsb_model->recupAncienMdp($this->session->login); 
         $pwdMdp = $this->input->post('pwdMdp');
         $confPwdMdp = $this->input->post('confPwdMdp');
 
@@ -62,6 +62,11 @@ class ChangementMdp extends CI_Controller {
 
 
         $resultP = $this->gsb_lib->Restric_mdp($this->input->post('pwdMdp'));
+
+        // $AnciensMdp = $this->gsb_model->Verif_ancien_Mdp($this->id_visiteur);
+        // if(in_array($pwdMdp, $AnciensMdp)){ 
+        //     $this->gsb_lib->ajouter_erreur("Nouveau Mot de passe déjà utilisé");
+        // }
 
         if ($resultP) {
             $this->gsb_lib->ajouter_erreur("Mot de passe pas assez sécurisé");
@@ -73,7 +78,21 @@ class ChangementMdp extends CI_Controller {
             $this->gsb_lib->ajouter_erreur("Mot de passe actuel incorrect");
             
         }
-      
+        
+        if (!$resultP) {
+            if ($mdp == $ancienMdp) {
+                if ($pwdMdp ==  $confPwdMdp) {
+                    $testa = $this->gsb_model->Modif_Mdp_Utilisateur($this->session->login , $pwdMdp); 
+                    if($testa){
+                        var_dump($testa);
+                        var_dump($this->id_visiteur);
+                        $this->session->modification_mdp = date('Y-m-d');
+                        redirect(site_url('Accueil'));
+                    }
+                }
+            }
+        }
+    
         $this->commun();
     }
 
@@ -82,38 +101,40 @@ class ChangementMdp extends CI_Controller {
  */
     private function commun(){
         //$this->info = "test";
-
+        
         //infos générales page
         $this->load->view('structures/v_page_entete');
         $result = $this->gsb_lib->Verif_date($this->session->modification_mdp);
         if ($result) {
             $data ['menus'] = $this->gsb_lib->get_menu("rst");
             $this->gsb_lib->ajouter_erreur("Vous devez changer votre mot de passe");
-
         }
-        else {
-        $data ['menus'] = $this->gsb_lib->get_menu($this->session->idRole);
+        else { 
+            $data ['menus'] = $this->gsb_lib->get_menu($this->session->idRole);
         }
         $this->load->view('v_sommaire', $data);
-        $data['titre'] = "Changement du mot de passe";
 
+        $data['titre'] = "Changement du mot de passe";
         
         $this->load->view('structures/v_contenu_entete', $data);
-
-         //gestion des notifications
-         if( isset($this->info) ){
+        //gestion des notifications
+        if( isset($this->info) ){
             $data['info'] = $this->info;
             $this->load->view('structures/v_notification', $data);
-         }
+        }
+        $data['enable'] = $this->gsb_lib->Verif_jour($this->session->modification_mdp);
+        if ($data['enable']) {
+            $this->gsb_lib->ajouter_erreur("Vous avez deja changer votre mot de passe aujourd'hui");
+        }
 
           //gestion des erreurs
         if($this->gsb_lib->nb_erreurs() > 0){
             $this->load->view('errors/html/v_error_gsb');
         }
+        
 
+        $this->load->view('v_modif_mdp', $data);
 
-
-        $this->load->view('v_modif_mdp');
         $this->load->view('structures/v_souscontenu_pied');
 
         //fin du contenu et de la page

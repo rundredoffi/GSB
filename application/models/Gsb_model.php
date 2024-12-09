@@ -35,17 +35,23 @@ class Gsb_model extends CI_Model {
  * 
  */
     public function Modif_Mdp_Utilisateur($login, $mdp){
-        $this->db->where('IdUtilisateur', $login);
-        $this->db->order_by('idMdp', 'DESC');
-        $this->db->limit(10);
-        $this->db->not_like('MDP', $mdp);
-        $this->db->set('IdUtilisateur', $login);
-        $this->db->set('MDP', $mdp);
-        $this->db->insert('historique_mdp');
+        
+        date_default_timezone_set('Europe/Paris');
+        $date = date('Y-m-d H:i:s');
+        $this->db->set('mdp', $mdp);
+        $this->db->set('modification_mdp', $date);
+        $this->db->where('login', $login);
+        return $this->db->update('utilisateur');
+    }
+
+
+    public function Verif_ancien_Mdp($id){
+        $this->db->select('MDP');
+        $this->db->from('historique_mdp');
+        $this->db->where('IdUtilisateur', $id);
         $query = $this->db->get();
         return $query->row_array();
     }
-
 /**
  * Retourne les informations d'un utilisateur
  * @param $id 
@@ -357,7 +363,33 @@ class Gsb_model extends CI_Model {
         $this->db->update('lignefraishorsforfait');
     }
 
-    public function getlastModifMdp($idFhf){
-        
+    /**
+     * Calcule le montant de frais forfait d'une fiche
+     * @param $idMois
+     * @param $idVisiteur 
+     * @return tableau associatif contenant le montant total des frais hors forfait
+    */
+    public function changer_mdp_utilisateur($idVisiteur , $mdpmodif){
+        $dateChangement = date('Y-m-d H:i:s');
+        $this->db->where('login', $idVisiteur);
+        $this->db->set('mdp', $mdpmodif);
+        $this->db->set('modification_mdp' , $dateChangement);
+        $this->db->update('utilisateur');
+        return $this->db->update('utilisateur');
+    }
+    public function recupAncienMdp($idVisiteur) {
+        $this->db->select('mdp');  
+        $this->db->from('utilisateur');
+        $this->db->where('login', $idVisiteur);  
+        $query = $this->db->get();
+
+        // Vérifier si une ligne a été retournée
+        if ($query->num_rows() > 0) {
+            // Retourner directement la valeur du mot de passe
+            return $query->row()->mdp;
+        } else {
+            // Retourner false si aucune correspondance n'a été trouvée
+            return false;
+        }
     }
 }

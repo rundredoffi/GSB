@@ -37,8 +37,10 @@ class Connexion extends CI_Controller {
  */ 
     public function valider_connexion(){
         $login = $this->input->post('txtLogin');
+        var_dump($login);
         $mdp = $this->input->post('pwdMdp');
         $utilisateur = $this->gsb_model->get_infos_utilisateur($login, $mdp);
+        var_dump($utilisateur);
         if(is_array($utilisateur) ){ //le login+mot de passe existe, le utilisateur peut accéder à l'application
             $donnees = array(
                 'id' => $utilisateur['idUtilisateur'],
