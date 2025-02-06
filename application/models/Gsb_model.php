@@ -35,11 +35,7 @@ class Gsb_model extends CI_Model {
  * 
  */
     public function Modif_Mdp_Utilisateur($login, $mdp){
-        
-        date_default_timezone_set('Europe/Paris');
-        $date = date('Y-m-d H:i:s');
         $this->db->set('mdp', $mdp);
-        $this->db->set('modification_mdp', $date);
         $this->db->where('login', $login);
         return $this->db->update('utilisateur');
     }

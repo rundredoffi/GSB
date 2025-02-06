@@ -122,16 +122,15 @@ class ChangementMdp extends CI_Controller {
             $data['info'] = $this->info;
             $this->load->view('structures/v_notification', $data);
         }
-        $data['enable'] = $this->gsb_lib->Verif_jour($this->session->modification_mdp);
-        if ($data['enable']) {
-            $this->gsb_lib->ajouter_erreur("Vous avez deja changer votre mot de passe aujourd'hui");
-        }
-
           //gestion des erreurs
         if($this->gsb_lib->nb_erreurs() > 0){
             $this->load->view('errors/html/v_error_gsb');
         }
         
+        $data['enable'] = $this->gsb_lib->Verif_jour($this->session->modification_mdp);
+        if ($data['enable']) {
+            $this->gsb_lib->ajouter_erreur("Vous avez deja changer votre mot de passe");
+        }
 
         $this->load->view('v_modif_mdp', $data);
 
